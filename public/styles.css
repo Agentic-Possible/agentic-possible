@@ -6,3 +6,6 @@
 .industry-art{display:block;width:100%;height:130px;object-fit:cover;object-position:center;border-bottom:1px solid #ddd;background:none}
 .detroit-card>img{display:block;width:100%;height:250px;object-fit:cover;object-position:center 60%}
 @media(max-width:560px){.industry-art{height:170px}.detroit-card,.detroit-card>img{height:260px}}
+.brand{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.brand-icon{display:block;width:48px;height:48px;flex:none}
+@media(max-width:560px){.brand-icon{width:40px;height:40px}}
