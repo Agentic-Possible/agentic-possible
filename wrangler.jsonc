@@ -1,0 +1,17 @@
+{
+  "name": "agentic-possible",
+  "compatibility_date": "2026-09-28",
+  "assets": {
+    "directory": "./public"
+  },
+  "routes": [
+    {
+      "pattern": "agenticpossible.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.agenticpossible.com",
+      "custom_domain": true
+    }
+  ]
+}
