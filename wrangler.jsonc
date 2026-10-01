@@ -4,6 +4,8 @@
   "assets": {
     "directory": "./public"
   },
+  "previews": {},
+  "preview_urls": true,
   "routes": [
     {
       "pattern": "agenticpossible.com",
