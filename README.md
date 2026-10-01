@@ -16,7 +16,7 @@ Then visit `http://localhost:8000`.
 
 - Update the contact email in `public/index.html`.
 - Edit copy directly in `public/index.html`.
-- Design tokens and responsive styles live in `public/styles.css`.
+- Design tokens and responsive styles live in `public/styles.css`. The tokens at the top of that file mirror the Agentic Possible design system: a monochrome palette, Helvetica Neue with Inter as the fallback, 1px hairlines, square corners and no shadows.
 
 ## Deploy
 
