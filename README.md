@@ -27,3 +27,10 @@ wrangler deploy
 ```
 
 GitHub pushes do not trigger a deployment automatically.
+
+## Writing
+
+The blog index is `public/blog/index.html`, with each article at
+`public/blog/<slug>/index.html`. These static pages need no build step. Each
+article credits Josh Crites and links to its original publication. The supplied
+homepage HTML is retained in `reference/Agentic Possible Homepage.html`.

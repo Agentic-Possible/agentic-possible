@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="What I learned building versioned knowledge, agent-readable documentation, and execution environments for developer education and support." name="description"/>
+<meta content="Josh Crites" name="author"/>
+<link href="https://agenticpossible.com/blog/ai-native-developer-support-at-aztec/" rel="canonical"/>
+<title>Building AI-Native Developer Support at Aztec | Agentic Possible</title>
+<link href="../../identicon.png" rel="icon" type="image/png"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&amp;display=swap" rel="stylesheet"/><link href="../../styles.css" rel="stylesheet"/>
+</head>
+<body>
+<header class="site-header blog-header"><a class="brand" href="../../"><img alt="" class="brand-icon" height="32" src="../../identicon.png" width="32"/><span class="wordmark">agentic possible</span></a><div class="header-right"><nav aria-label="Main navigation"><a href="../../#work">Work</a><a href="../../#approach">Approach</a><a href="../../#industries">Industries</a><a href="../../#about">About</a><a aria-current="page" href="../">Writing</a></nav><a class="mobile-writing-link" href="../">Writing</a><a aria-label="Get in touch" class="button small" href="mailto:hello@agenticpossible.com"><span>Get in touch</span><svg aria-hidden="true" class="icon" focusable="false" viewbox="0 0 24 24"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></a></div></header>
+<main class="article-page" id="main-content"><div class="article-top"><a class="text-link" href="../">← All writing</a></div><article><header class="article-heading"><p class="eyebrow">Article</p><h1>Building AI-Native Developer Support at Aztec</h1><p class="article-subtitle">What I learned building systems for developer education, support, and agent-assisted software development</p><img alt="Josh Crites at sunset" class="author-photo" height="56" src="../../images/josh-crites-headshot.png" width="56"/><p class="article-meta">By <a href="https://joshcrites.com/">Josh Crites</a> · <time datetime="2026-07-16">July 16, 2026</time></p></header><div class="article-body"><p>Software development is becoming a collaboration between people and agents. That changes how developers discover a technology, form mental models, troubleshoot problems, and decide whether it is worth adopting.</p>
+<p>At Aztec, I built systems that answered technical questions, maintained documentation, validated tutorials, reproduced bugs, and showed us where developers struggled. The work led me to a working definition of AI-native developer relations: give developers and their agents reliable context, let them test that context against real software, and let what breaks feed the next attempt.</p>
+<p>This post covers the first two parts of that system, knowledge and execution. A <a href="../developer-relations-as-a-learning-system/">companion post</a> covers the feedback loop that connected support, evaluation, documentation, and product work.</p>
+<h2 id="the-stack-wouldnt-hold-still">The stack wouldn’t hold still</h2>
+<p><a href="https://aztec.network/">Aztec</a> is a privacy-focused layer 2 network. Developers use it to build applications with private state and private execution while using Ethereum for settlement.</p>
+<p>It is hard to learn. A developer needs working knowledge of zero-knowledge proofs, a new programming model, the <a href="https://noir-lang.org/">Noir language</a>, Aztec’s smart contract framework, SDKs and command-line tools, and the differences among local environments, testnets, and mainnet.</p>
+<p>The stack also moved fast. Releases shipped breaking changes, and different networks ran different versions. A technically correct answer for the wrong version sent a developer in the wrong direction.</p>
+<p>So the same material had to serve different readers, a human developer and the agent working on their behalf. A person notices ambiguity and asks a follow-up whereas agents turn mismatched context into plausible-looking code. Neither can be trusted until the answer touches the software.</p>
+<p>Any answer was a bet on the version.</p>
+<h2 id="knowledge-was-the-wrong-frame">Knowledge was the wrong frame</h2>
+<p>The goal is to give a developer a mental map, give their agent the right source material, and better code should follow.</p>
+<p>Developers had to understand enough to direct their agent, whose result had to survive tests, deployments, and comparison with the documentation. And whatever failed had to make the next attempt easier.</p>
+<p>That changed the shape of the system. Honk AI carried the mental map, agent-readable documentation supplied the context and support interactions showed us where the path broke.</p>
+<p>Without running the output, we couldn’t evaluate it.</p>
+<h2 id="honk-ai-right-answer-wrong-version">Honk AI: Right answer, wrong version</h2>
+<p>Honk AI was a retrieval-augmented generation assistant for the Aztec ecosystem, available through the documentation site, Discord, Slack, and an MCP interface.</p>
+<p>It began with <a href="https://github.com/arc53/DocsGPT">DocsGPT</a> and became a heavily customized Flask application, built with a lot of help from Claude Opus and the Codex CLI. A question triggered retrieval from an embedded corpus, and the model answered from those sources with citations.</p>
+<p>RAG fit a source base that changed often. We could index a new Aztec release without training another model. Citations also let developers inspect the source and judge whether it applied to their environment.</p>
+<p>Version changes exposed the weak point in a single corpus. Honk served a period when mainnet and testnet ran the same Aztec version. After testnet upgraded to v5 and mainnet did not, it started giving testnet users outdated answers. We built a separate v5 corpus for testnet and added a step that identified the network and version before retrieval.</p>
+<p>The corpus included API and CLI references, framework and standard-library code, tests, starter projects, working applications, governance repositories. Each kind of source answered different questions. Documentation explained why something worked. References and source showed how, alongside best practices. Tests revealed common data flows and which combinations worked together.</p>
+<p>Open-source infrastructure made that far more useful. When an abstraction leaked, an agent could read the implementation, the tests, the issues, and the examples instead of trusting a polished documentation layer.</p>
+<p>I also maintained an MCP integration that let Honk query live Aztec and Ethereum activity (e.g. network status, public transactions, contracts, gas conditions). The tool could inspect actual behavior of a running application. That shift moved the assistant from describing operations to investigating them and validating its knowledge.</p>
+<h2 id="legible-by-default">Legible by default</h2>
+<p>Most developers meet Aztec through their own tools: ChatGPT, Claude, Cursor, the Codex CLI, or another coding harness. They infrequently install an official bot, skill, plugin, or MCP server. The open web has to be legible to agents by default.</p>
+<p>We used a Docusaurus <a href="https://github.com/rachfop/docusaurus-plugin-llms">plugin</a> to generate <code class="language-plaintext highlighter-rouge">llms.txt</code>, link framework and TypeScript API references, and serve Markdown versions of documentation pages. As the root file grew, we moved to a concise index that pointed agents at more specific bodies of knowledge.</p>
+<p>This resembled search engine optimization, but the useful unit was different. Finding a page is the beginning, not the answer. An agent needs the correct version of a fact, enough context to interpret it, and a way to turn it into a valid action.</p>
+<p>Explicit versioning, stable URLs, descriptive headings, complete examples, prerequisites, and documented failure conditions all helped. These are already the marks of good human documentation.</p>
+<p>The web was already the interface, agents just read it differently.</p>
+<h2 id="compatibility-beats-volume">Compatibility beats volume</h2>
+<p>For deeper integration we published the <a href="https://www.npmjs.com/package/@aztec/mcp-server"><code class="language-plaintext highlighter-rouge">@aztec/mcp-server</code></a> package. It gave agents local access to selected repositories and documentation, preserved version context, and provided semantic search across the knowledge base.</p>
+<p>Version control was the design, not a feature. “The Aztec API” changed across releases, branches, and networks, and extra context made answers worse when it quietly mixed incompatible generations of the stack.</p>
+<p>I stopped optimizing for volume. Aztec application developers, node operators, and infrastructure providers used similar words for different questions. Retrieval worked best when it assembled a small set of sources from the same task, audience, and software version.</p>
+<p>I expected developers to route through Honk’s own tools. Many preferred coding agents with rich local context and tools they already knew. That reframed the MCP server and agent-readable documentation as useful surfaces in their own right, not doorways into one official assistant.</p>
+<p>A small corpus from the right generation beats a large one from everywhere.</p>
+<h2 id="when-the-answer-has-to-run">When the answer has to run</h2>
+<p>Some support problems need more than another paragraph. The agent has to run the software.</p>
+<p>I used persistent agent sessions I could reach remotely, including through Telegram. Their host environments had the relevant Aztec tooling and network access. With scoped credentials and permissions, an agent could deploy an account contract, move test funds, send a transaction, inspect public state, or reproduce a bug report.</p>
+<p>That made support concrete. Given a GitHub issue, I could ask an agent to reproduce the behavior, collect the exact failure, compare it with the relevant source and documentation, and prepare a report an engineer could use.</p>
+<p>I applied the same approach to releases. Before publishing a documentation version, I sent an agent through the tutorials and Aztec.js examples, ran the snippets, and collected the assumptions that no longer held. That kind of broad, repetitive verification is close to impossible to do by hand on every release.</p>
+<p>Execution also raises the stakes. An agent that can transact, deploy, or modify a repository needs tighter boundaries than a search interface. I kept credentials and test funds scoped to the environment, logged operations, and required approval before an agent crossed from inspection into a transaction.</p>
+<h2 id="failure-was-the-useful-output">Failure was the useful output</h2>
+<p>Together, these systems shortened the distance between a developer’s question and observable behavior on a real network. A support interaction could end with evidence instead of speculation.</p>
+<p>They also left something I had not set out to build: a record of recurring failures. In the <a href="../developer-relations-as-a-learning-system/">companion post</a>, I describe how those signals fed back into documentation, tooling, and product work.</p>
+<p>Reliable context is not something you write once. It is something the software keeps confirming.</p>
+</div><div class="article-source">Originally published on <a href="https://joshcrites.com/posts/ai-native-developer-support-at-aztec/">joshcrites.com</a>.</div></article></main>
+<footer class="site-footer"><a class="brand" href="../../"><img alt="" class="brand-icon" height="32" src="../../identicon.png" width="32"/><span class="wordmark">agentic possible</span></a><p class="eyebrow"><a href="../">Writing</a>  /  Software consulting  /  Detroit, Michigan</p><p>© Agentic Possible</p></footer>
+</body></html>
